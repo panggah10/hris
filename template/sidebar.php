@@ -4,7 +4,7 @@
     <ul class="sidebar-nav" id="sidebar-nav">
 
         <li class="nav-item">
-            <a class="nav-link " href="<?php echo BASE_URL; ?>/sikeu/index.php">
+            <a class="nav-link " href="<?php echo BASE_URL; ?>/hris/index.php">
                 <i class="bi bi-grid"></i>
                 <span>Dashboard</span>
             </a>
@@ -12,7 +12,7 @@
 
         <li class="nav-item">
             <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="<?php echo BASE_URL; ?>/hris/reward/index.php">
-                <i class="bi bi-kanban"></i><span>Reward</span></i>
+                <i class="bi bi-award"></i><span>Reward</span></i>
             </a>
 
         </li><!-- End Components Nav -->
