@@ -1,6 +1,6 @@
 <?php
-include 'template/header.php';
-include 'template/sidebar.php';
+include 'template/header.php'; //load header template
+include 'template/sidebar.php'; //load sidebar template
 ?>
 <main id="main" class="main">
 
@@ -651,5 +651,5 @@ include 'template/sidebar.php';
 </main><!-- End #main -->
 
 <?php
-include 'template/footer.php';
+include 'template/footer.php'; //load footer template
 ?>
