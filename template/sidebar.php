@@ -4,7 +4,7 @@
     <ul class="sidebar-nav" id="sidebar-nav">
 
         <li class="nav-item">
-            <a class="nav-link " href="<?php echo BASE_URL; ?>/sikeu/index.php">
+            <a class="nav-link " href="<?php echo BASE_URL; ?>/hris/index.php">
                 <i class="bi bi-grid"></i>
                 <span>Dashboard</span>
             </a>
