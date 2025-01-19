@@ -14,8 +14,13 @@
             <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="<?php echo BASE_URL; ?>/hris/reward/index.php">
                 <i class="bi bi-award"></i><span>Reward</span></i>
             </a>
-
         </li><!-- End Components Nav -->
+
+        <li class="nav-item">
+        <a class="nav-link collapsed" href="<?php echo BASE_URL; ?>/hris/recruitment/index.php">
+            <i class="bi bi-briefcase"></i><span>Recruitment</span>
+        </a>
+    </li><!-- End Recruitment Nav -->
 
         <li class="nav-item">
             <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
