@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Generation Time: Dec 30, 2024 at 02:32 AM
--- Server version: 8.0.30
--- PHP Version: 8.1.10
+-- Host: 127.0.0.1
+-- Waktu pembuatan: 19 Jan 2025 pada 23.43
+-- Versi server: 10.4.32-MariaDB
+-- Versi PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,57 +24,90 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `lowongan`
+-- Struktur dari tabel `dokumen pendukung`
+--
+
+CREATE TABLE `dokumen pendukung` (
+  `dokumen_peg` int(11) NOT NULL,
+  `kontrak_peg` int(11) NOT NULL,
+  `jenis_dokumen` int(11) NOT NULL,
+  `tanggal_unggah` date NOT NULL,
+  `nama_file` text NOT NULL,
+  `lokasi_file` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `kontrak pegawai`
+--
+
+CREATE TABLE `kontrak pegawai` (
+  `id_kontrak` varchar(50) NOT NULL,
+  `id_pegawai` varchar(50) NOT NULL,
+  `tanggal_mulai` date NOT NULL,
+  `tanggal_berakhir` date NOT NULL,
+  `status_kontrak` varchar(20) NOT NULL,
+  `gaji_bulanan` decimal(10,0) NOT NULL,
+  `tipe_kontrak` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `lowongan`
 --
 
 CREATE TABLE `lowongan` (
-  `id_lowongan` int NOT NULL,
+  `id_lowongan` int(11) NOT NULL,
   `nama_lowongan` varchar(128) NOT NULL,
   `deskripsi_lowongan` text NOT NULL,
   `jabatan` varchar(128) NOT NULL,
   `tgl_posting` date NOT NULL,
   `tgl_tutup` date NOT NULL,
   `status` enum('Tersedia','Tidak Tersedia') NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pegawai`
+-- Struktur dari tabel `pegawai`
 --
 
 CREATE TABLE `pegawai` (
-  `id_peg` int NOT NULL,
+  `id_peg` int(11) NOT NULL,
   `nama_peg` varchar(128) NOT NULL,
   `gender_peg` enum('Laki-laki','Perempuan') NOT NULL,
   `status_peg` varchar(128) NOT NULL,
   `almt_peg` text NOT NULL,
   `no_telp_peg` varchar(128) NOT NULL,
-  `email_peg` varchar(128) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `email_peg` varchar(128) NOT NULL,
+  `jabatan_peg` varchar(11) NOT NULL,
+  `ttl_peg` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pelamar`
+-- Struktur dari tabel `pelamar`
 --
 
 CREATE TABLE `pelamar` (
-  `id_pelamar` int NOT NULL,
+  `id_pelamar` int(11) NOT NULL,
   `nama_pel` varchar(128) NOT NULL,
   `email_pel` varchar(128) NOT NULL,
-  `id_lowongan` int NOT NULL,
+  `id_lowongan` int(11) NOT NULL,
   `status_pel` enum('Diterima','Ditolak') NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pelatihan`
+-- Struktur dari tabel `pelatihan`
 --
 
 CREATE TABLE `pelatihan` (
-  `id_pelatihan` int NOT NULL,
+  `id_pelatihan` int(11) NOT NULL,
   `nama_pelatihan` varchar(128) NOT NULL,
   `deskripsi_pelatihan` varchar(128) NOT NULL,
   `tgl_pelaksanaan` date NOT NULL,
@@ -83,113 +116,155 @@ CREATE TABLE `pelatihan` (
   `lokasi_pelatihan` varchar(128) NOT NULL,
   `pemateri_pelatihan` varchar(128) NOT NULL,
   `status_pelatihan` enum('Terlaksana','Tidak Terlaksana') NOT NULL,
-  `id_pegawai` int NOT NULL,
+  `id_pegawai` int(11) NOT NULL,
   `kapasitas` varchar(128) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `penghargaan`
+-- Struktur dari tabel `penghargaan`
 --
 
 CREATE TABLE `penghargaan` (
-  `id_peng` int NOT NULL,
+  `id_peng` int(11) NOT NULL,
   `nama_peng` varchar(128) NOT NULL,
   `jenis_peng` varchar(128) NOT NULL,
   `desk_peng` text NOT NULL,
-  `id_peg` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `id_peg` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `penilaian`
+--
+
+CREATE TABLE `penilaian` (
+  `id_penilaian` int(11) NOT NULL,
+  `id_pegawai` int(11) NOT NULL,
+  `id_KPI` int(11) NOT NULL,
+  `nilai` int(11) NOT NULL,
+  `periode penilaian` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `riwayat perubahan kontrak`
+--
+
+CREATE TABLE `riwayat perubahan kontrak` (
+  `id_perubahan` varchar(50) NOT NULL,
+  `id_kontrak` varchar(50) NOT NULL,
+  `tanggal_perubahan` date NOT NULL,
+  `gaji_sebelum_perubahan` decimal(10,0) NOT NULL,
+  `gaji_setelah_perubahan` decimal(10,0) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `lowongan`
+-- Indeks untuk tabel `lowongan`
 --
 ALTER TABLE `lowongan`
   ADD PRIMARY KEY (`id_lowongan`);
 
 --
--- Indexes for table `pegawai`
+-- Indeks untuk tabel `pegawai`
 --
 ALTER TABLE `pegawai`
   ADD PRIMARY KEY (`id_peg`);
 
 --
--- Indexes for table `pelamar`
+-- Indeks untuk tabel `pelamar`
 --
 ALTER TABLE `pelamar`
   ADD PRIMARY KEY (`id_pelamar`),
   ADD UNIQUE KEY `id_lowongan` (`id_lowongan`);
 
 --
--- Indexes for table `pelatihan`
+-- Indeks untuk tabel `pelatihan`
 --
 ALTER TABLE `pelatihan`
   ADD PRIMARY KEY (`id_pelatihan`),
   ADD UNIQUE KEY `id_pegawai` (`id_pegawai`);
 
 --
--- Indexes for table `penghargaan`
+-- Indeks untuk tabel `penghargaan`
 --
 ALTER TABLE `penghargaan`
   ADD PRIMARY KEY (`id_peng`),
   ADD UNIQUE KEY `id_peg` (`id_peg`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- Indeks untuk tabel `penilaian`
+--
+ALTER TABLE `penilaian`
+  ADD PRIMARY KEY (`id_penilaian`),
+  ADD UNIQUE KEY `id_pegawai` (`id_pegawai`),
+  ADD UNIQUE KEY `id_KPI` (`id_KPI`);
+
+--
+-- AUTO_INCREMENT untuk tabel yang dibuang
 --
 
 --
--- AUTO_INCREMENT for table `lowongan`
+-- AUTO_INCREMENT untuk tabel `lowongan`
 --
 ALTER TABLE `lowongan`
-  MODIFY `id_lowongan` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id_lowongan` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `pegawai`
+-- AUTO_INCREMENT untuk tabel `pegawai`
 --
 ALTER TABLE `pegawai`
-  MODIFY `id_peg` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id_peg` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `pelamar`
+-- AUTO_INCREMENT untuk tabel `pelamar`
 --
 ALTER TABLE `pelamar`
-  MODIFY `id_pelamar` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id_pelamar` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `pelatihan`
+-- AUTO_INCREMENT untuk tabel `pelatihan`
 --
 ALTER TABLE `pelatihan`
-  MODIFY `id_pelatihan` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id_pelatihan` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `penghargaan`
+-- AUTO_INCREMENT untuk tabel `penghargaan`
 --
 ALTER TABLE `penghargaan`
-  MODIFY `id_peng` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id_peng` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- Constraints for dumped tables
+-- AUTO_INCREMENT untuk tabel `penilaian`
+--
+ALTER TABLE `penilaian`
+  MODIFY `id_penilaian` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
 --
 
 --
--- Constraints for table `pelamar`
+-- Ketidakleluasaan untuk tabel `pelamar`
 --
 ALTER TABLE `pelamar`
   ADD CONSTRAINT `pelamar_ibfk_1` FOREIGN KEY (`id_lowongan`) REFERENCES `lowongan` (`id_lowongan`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `pelatihan`
+-- Ketidakleluasaan untuk tabel `pelatihan`
 --
 ALTER TABLE `pelatihan`
   ADD CONSTRAINT `pelatihan_ibfk_1` FOREIGN KEY (`id_pegawai`) REFERENCES `pegawai` (`id_peg`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `penghargaan`
+-- Ketidakleluasaan untuk tabel `penghargaan`
 --
 ALTER TABLE `penghargaan`
   ADD CONSTRAINT `penghargaan_ibfk_1` FOREIGN KEY (`id_peg`) REFERENCES `pegawai` (`id_peg`) ON DELETE CASCADE ON UPDATE CASCADE;
