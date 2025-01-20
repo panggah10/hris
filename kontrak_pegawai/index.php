@@ -54,7 +54,7 @@ $kontrak_pegawai = getData('kontrak pegawai');
                     </div>
                     <div class="mb-3">
                         <label for="tipe_kontrak" class="form-label">Tipe Kontrak</label>
-                        <input type="number" class="form-control" id="tipe_kontrak" name="tipe_kontrak" required>
+                        <input type="text" class="form-control" id="tipe_kontrak" name="tipe_kontrak" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
