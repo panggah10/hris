@@ -5,26 +5,30 @@ ini_set('display_errors', 1);
 include '../connection.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Fetching data from the form
     $id_pegawai = $_POST['id_pegawai'];
-    $tanggal_mulai = $_POST['tanggal_mulai_kontrak'];
-    $tanggal_berakhir = $_POST['tanggal_berakhir_kontrak'];
+    $tanggal_mulai_kontrak = $_POST['tanggal_mulai_kontrak'];
+    $tanggal_berakhir_kontrak = $_POST['tanggal_berakhir_kontrak'];
     $status_kontrak = $_POST['status_kontrak'];
     $gaji_bulanan = $_POST['gaji_bulanan'];
     $tipe_kontrak = $_POST['tipe_kontrak'];
 
-    // Prepare the SQL statement to prevent SQL injection
-    $stmt = $conn->prepare("INSERT INTO `kontrak pegawai` (id_pegawai, tanggal_mulai, tanggal_berakhir, status_kontrak, gaji_bulanan, tipe_kontrak) VALUES (?, ?, ?, ?, ?, ?)");
+    // Fetch the current salary before the update
+    $current_salary_query = "SELECT gaji_bulanan FROM `kontrak pegawai` WHERE id_pegawai = '$id_pegawai' ORDER BY tanggal_berakhir DESC LIMIT 1";
+    $current_salary_result = $conn->query($current_salary_query);
+    $current_salary_row = $current_salary_result->fetch_assoc();
+    $gaji_sebelum_perubahan = $current_salary_row ? $current_salary_row['gaji_bulanan'] : 0;
 
-    $stmt->bind_param("ssssss", $id_pegawai, $tanggal_mulai, $tanggal_berakhir, $status_kontrak, $gaji_bulanan, $tipe_kontrak);
+    // Insert the contract data into the database
+    $query = "INSERT INTO `kontrak pegawai` (id_pegawai, tanggal_mulai, tanggal_berakhir, status_kontrak, gaji_bulanan, tipe_kontrak) VALUES ('$id_pegawai', '$tanggal_mulai_kontrak', '$tanggal_berakhir_kontrak', '$status_kontrak', '$gaji_bulanan', '$tipe_kontrak')";
+    $conn->query($query);
 
-    // Execute the statement
-    if ($stmt->execute()) {
-        echo "Kontrak pegawai berhasil disimpan.";
-    } else {
-        echo "Terjadi kesalahan saat menyimpan kontrak pegawai: " . $stmt->error; // Improved error handling
-    }
+    // Log the change in the change_history table
+    $log_query = "INSERT INTO `riwayat perubahan kontrak` (id_kontrak, tanggal_perubahan, gaji_sebelum_perubahan, gaji_setelah_perubahan) VALUES ('$id_pegawai', NOW(), '$gaji_sebelum_perubahan', '$gaji_bulanan')";
+    $conn->query($log_query);
 
-    // Close the statement and connection
-    $stmt->close();
-    $conn->close();
+    // Redirect or display a success message
+    header("Location: index.php");
+    exit();
 }
+?>
