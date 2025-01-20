@@ -198,7 +198,7 @@ CREATE TABLE `lowongan` (
   `tgl_posting` date NOT NULL,
   `tgl_tutup` date NOT NULL,
   `status` enum('Tersedia','Tidak Tersedia') NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
@@ -342,7 +342,7 @@ CREATE TABLE `penilaian_pelamar` (
   `tgl_dinilai` date NOT NULL,
   `skor` int NOT NULL,
   `catatan` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
@@ -457,7 +457,8 @@ CREATE TABLE `tahap_lamaran` (
   `id_tahap` int NOT NULL,
   `nama_tahap` varchar(128) NOT NULL,
   `deskripsi_tahap` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
 
 --
 -- Indexes for dumped tables
