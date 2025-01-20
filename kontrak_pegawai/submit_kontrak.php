@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $tipe_kontrak = $_POST['tipe_kontrak'];
 
     // Prepare the SQL statement to prevent SQL injection
-    $stmt = $conn->prepare("INSERT INTO `kontrak pegawai` (id_pegawai, tanggal_mulai, tanggal_berakhir, status_kontrak, gaji_bulanan, tipe_kontrak) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO `kontrak pegawai` (id_pegawai, tanggal_mulai_kontrak, tanggal_berakhir_kontrak, status_kontrak, gaji_bulanan, tipe_kontrak) VALUES (?, ?, ?, ?, ?, ?)");
 
     $stmt->bind_param("ssssss", $id_pegawai, $tanggal_mulai, $tanggal_berakhir, $status_kontrak, $gaji_bulanan, $tipe_kontrak);
 
