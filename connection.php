@@ -5,7 +5,7 @@ $password = "";
 $dbname = "hris";
 
 // Membuat koneksi
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli("localhost","root","","hris");
 
 // Memeriksa koneksi
 if ($conn->connect_error) {
