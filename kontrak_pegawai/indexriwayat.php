@@ -41,15 +41,11 @@ $change_history = getChangeHistory();
         </ul>
         <div class="tab-content" id="kontrakPegawaiTabContent">
             <div class="tab-pane fade show active" id="riwayat" role="tabpanel" aria-labelledby="riwayat-tab">
-                <h2>Riwayat Perubahan</h2>
+                <h2>Riwayat Perubahan Kontrak</h2>
                 <form method="post" action="submit_change_history.php">
                     <div class="mb-3">
                         <label for="id_kontrak" class="form-label">ID Kontrak</label>
                         <input type="text" class="form-control" id="id_kontrak" name="id_kontrak" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="tanggal_perubahan" class="form-label">Tanggal Perubahan</label>
-                        <input type="date" class="form-control" id="tanggal_perubahan" name="tanggal_perubahan" required>
                     </div>
                     <div class="mb-3">
                         <label for="gaji_sebelum" class="form-label">Gaji Sebelum Perubahan</label>
@@ -58,6 +54,10 @@ $change_history = getChangeHistory();
                     <div class="mb-3">
                         <label for="gaji_setelah" class="form-label">Gaji Setelah Perubahan</label>
                         <input type="text" class="form-control" id="gaji_setelah" name="gaji_setelah" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="keterangan_perubahan" class="form-label">Keterangan Perubahan</label>
+                        <input type="text" class="form-control" id="keterangan_perubahan" name="keterangan_perubahan" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Log Perubahan</button>
                 </form>
@@ -68,6 +68,7 @@ $change_history = getChangeHistory();
                             <th>Tanggal Perubahan</th>
                             <th>Gaji Sebelum Perubahan</th>
                             <th>Gaji Setelah Perubahan</th>
+                            <th>Keterangan Perubahan</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -77,6 +78,7 @@ $change_history = getChangeHistory();
                                 <td><?= $row['tanggal_perubahan'] ?></td>
                                 <td><?= $row['gaji_sebelum_perubahan'] ?></td>
                                 <td><?= $row['gaji_setelah_perubahan'] ?></td>
+                                <td><?= $row['keterangan_perubahan'] ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
