@@ -71,7 +71,10 @@ $change_history = getChangeHistory();
                     </div>
                     <div class="mb-3">
                         <label for="tipe_kontrak" class="form-label">Tipe Kontrak</label>
-                        <input type="text" class="form-control" id="tipe_kontrak" name="tipe_kontrak" required>
+                        <select class="form-select" id="tipe_kontrak" name="tipe_kontrak" required>
+                            <option value="1">Tetap</option>
+                            <option value="2">Kontrak</option>
+                        </select>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
@@ -92,8 +95,8 @@ $change_history = getChangeHistory();
                         <?php foreach ($kontrak_pegawai as $row): ?>
                             <tr>
                                 <td><?= $row['id_pegawai'] ?></td>
-                                <td><?= $row['tanggal_mulai'] ?></td>
-                                <td><?= $row['tanggal_berakhir'] ?></td>
+                                <td><?= $row['tanggal_mulai_kontrak'] ?></td>
+                                <td><?= $row['tanggal_berakhir_kontrak'] ?></td>
                                 <td><?= $row['status_kontrak'] ?></td>
                                 <td><?= $row['gaji_bulanan'] ?></td>
                                 <td><?= $row['tipe_kontrak'] ?></td>
