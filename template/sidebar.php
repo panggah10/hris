@@ -27,7 +27,7 @@
         </a>
         <li class="nav-item">
         <a class="nav-link collapsed" href="<?php echo BASE_URL; ?>/hris/kontrak_pegawai/index.php">
-            <i class="bi bi-briefcase"></i><span>Manajemen Kontrak Pegawai</span>
+            <i class="bi bi-briefcase"></i><span>Kontrak Pegawai</span>
         </a>
     </li><!-- End Recruitment Nav -->
 
