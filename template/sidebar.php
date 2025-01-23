@@ -14,6 +14,11 @@
             <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="<?php echo BASE_URL; ?>/hris/reward/index.php">
                 <i class="bi bi-award"></i><span>Reward</span></i>
             </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="<?php echo BASE_URL; ?>/hris/kedisiplinan/index.php">
+                <i class="bi bi-award"></i><span>Kedisiplinan</span></i>
+            </a>
         </li><!-- End Components Nav -->
 
         <li class="nav-item">
