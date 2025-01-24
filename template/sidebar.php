@@ -111,17 +111,17 @@
 
         <li class="nav-item">
             <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
-                <i class="bi bi-backpack4"></i><span>Manajemen Promosi & Mutasi</span><i class="bi bi-chevron-down ms-auto"></i>
+                <i class="bi bi-backpack4"></i><span>icon</span><i class="bi bi-chevron-down ms-auto"></i>
             </a>
             <ul id="icons-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
                 <li>
-                    <a href="<?php echo BASE_URL; ?>/hris/Promosi/index.php">
-                        <i class="bi bi-caret-right-fill"></i><span>Promosi</span>
+                    <a href="<?php echo BASE_URL; ?>/hris/icon/index.php">
+                        <i class="bi bi-caret-right-fill"></i><span>icon</span>
                     </a>
                 </li>
                 <li>
-                    <a href="<?php echo BASE_URL; ?>/hris/Mutasi/index.php">
-                        <i class="bi bi-caret-right-fill"></i><span>Mutasi</span>
+                    <a href="<?php echo BASE_URL; ?>/hris/icon/index.php">
+                        <i class="bi bi-caret-right-fill"></i><span>icon</span>
                     </a>
                 </li>
             </ul>
