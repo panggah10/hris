@@ -14,6 +14,11 @@
             <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="<?php echo BASE_URL; ?>/hris/reward/index.php">
                 <i class="bi bi-award"></i><span>Reward</span></i>
             </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="<?php echo BASE_URL; ?>/hris/kedisiplinan/index.php">
+                <i class="bi bi-award"></i><span>Kedisiplinan</span></i>
+            </a>
         </li><!-- End Components Nav -->
 
         <li class="nav-item">
@@ -21,6 +26,19 @@
                 <i class="bi bi-briefcase"></i><span>Recruitment</span>
             </a>
         </li><!-- End Recruitment Nav -->
+
+        <a class="nav-link collapsed" href="<?php echo BASE_URL; ?>/hris/recruitment/index.php">
+            <i class="bi bi-briefcase"></i><span>Recruitment</span>
+        </a>
+        <li class="nav-item">
+        <a class="nav-link collapsed" href="<?php echo BASE_URL; ?>/hris/kontrak_pegawai/index.php">
+            <i class="bi bi-briefcase"></i><span>Kontrak Pegawai</span>
+        </a>
+        <li class="nav-item">
+        <a class="nav-link collapsed" href="<?php echo BASE_URL; ?>/hris/slip_gaji/index.php">
+            <i class="bi bi-cash-stack"></i><span>Slip Gaji</span>
+        </a>   
+    </li><!-- End Recruitment Nav -->
 
         <li class="nav-item">
             <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">

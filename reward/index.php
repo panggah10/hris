@@ -39,8 +39,15 @@ include '../template/sidebar.php';
                 </div>
 
                 <div class="col-12">
-                    <label for="exampleFormControlTextarea1">Alamat</label>
-                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                  
+                    <label for="alamat">Alamat</label>
+<select id="alamat" name="alamat">
+  <option value="Kalimantan Timur">Kalimantan Timur</option>
+  <option value="Bandung">Bandung</option>
+  <option value="Jakarta">Jakarta</option>
+  </select>
+ 
+ 
                 </div>
                 <div>
                     <button type="button" class="btn btn-success w-100">Success</button>

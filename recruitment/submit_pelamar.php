@@ -1,18 +1,28 @@
 <?php
-include 'connection.php';
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+include '../connection.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Fetching data from the form
     $id_pelamar = $_POST['id_pelamar'];
+    $nama_pel = $_POST['nama_pel'];
+    $email_pel = $_POST['email_pel'];
+    $id_lowongan = $_POST['id_lowongan'];
+    $status_pel = $_POST['status_pel'];
+    $jabatan_dipilih = $_POST['jabatan_dipilih'];
 
-    // Lakukan sesuatu dengan ID pelamar, misalnya menyimpan ke database atau memproses lebih lanjut
-    // Contoh: Menyimpan ID pelamar ke database
-    $sql = "INSERT INTO pelamar (id_pelamar) VALUES ('$id_pelamar')";
-    if ($conn->query($sql) === TRUE) {
-        echo "ID pelamar berhasil disimpan.";
+    // Insert the applicant data into the database
+    $query = "INSERT INTO pelamar (id_pelamar, nama_pel, email_pel, id_lowongan, status_pel, jabatan_dipilih) VALUES ('$id_pelamar', '$nama_pel', '$email_pel', '$id_lowongan', '$status_pel', '$jabatan_dipilih')";
+    if ($conn->query($query) === TRUE) {
+        echo "Data pelamar berhasil disimpan.";
     } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+        echo "Error: " . $query . "<br>" . $conn->error;
     }
 
-    $conn->close();
+    // Redirect or display a success message
+    header("Location: index.php");
+    exit();
 }
 ?>
