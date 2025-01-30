@@ -1,41 +1,69 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
+include '../template/header.php';
+include '../template/sidebar.php';
 include '../connection.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Fetching data from the form
+    // Retrieve form data
     $id_pegawai = $_POST['id_pegawai'];
-    $tanggal_mulai_kontrak = date('Y-m-d', strtotime($_POST['tanggal_mulai_kontrak']));
-    $tanggal_berakhir_kontrak = date('Y-m-d', strtotime($_POST['tanggal_berakhir_kontrak']));
+    $tanggal_mulai_kontrak = $_POST['tanggal_mulai_kontrak'];
+    $tanggal_berakhir_kontrak = $_POST['tanggal_berakhir_kontrak'];
     $status_kontrak = $_POST['status_kontrak'];
     $gaji_bulanan = $_POST['gaji_bulanan'];
     $tipe_kontrak = $_POST['tipe_kontrak'];
-    $tanggal_perubahan = date('Y-m-d'); // Assuming today's date for the change
 
-    // Fetch the current salary before the update
-    $current_salary_query = "SELECT gaji_bulanan FROM `kontrak pegawai` WHERE id_pegawai = '$id_pegawai' ORDER BY tanggal_berakhir_kontrak DESC LIMIT 1";
-    $current_salary_result = $conn->query($current_salary_query);
-    $current_salary_row = $current_salary_result->fetch_assoc();
-    $gaji_sebelum_perubahan = $current_salary_row ? $current_salary_row['gaji_bulanan'] : 0;
+    // Insert data into the database
+    $sql = "INSERT INTO `kontrak pegawai` (id_pegawai, tanggal_mulai_kontrak, tanggal_berakhir_kontrak, status_kontrak, gaji_bulanan, tipe_kontrak) VALUES (?, ?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("issssi", $id_pegawai, $tanggal_mulai_kontrak, $tanggal_berakhir_kontrak, $status_kontrak, $gaji_bulanan, $tipe_kontrak);
 
-    // Insert the contract data into the database
-    $query = "INSERT INTO `kontrak pegawai` (id_pegawai, tanggal_mulai_kontrak, tanggal_berakhir_kontrak, status_kontrak, gaji_bulanan, tipe_kontrak) VALUES ('$id_pegawai', '$tanggal_mulai_kontrak', '$tanggal_berakhir_kontrak', '$status_kontrak', '$gaji_bulanan', '$tipe_kontrak')";
-    $conn->query($query);
-
-    // Fetch the next id_perubahan
-    $max_id_query = "SELECT MAX(id_perubahan) AS max_id FROM `riwayat perubahan kontrak`";
-    $max_id_result = $conn->query($max_id_query);
-    $max_id_row = $max_id_result->fetch_assoc();
-    $new_id_perubahan = $max_id_row['max_id'] + 1;
-
-    // Log the change in the change_history table
-    $log_query = "INSERT INTO `riwayat perubahan kontrak` (id_perubahan, id_kontrak, tanggal_perubahan, gaji_sebelum_perubahan, gaji_setelah_perubahan, keterangan_perubahan) VALUES ('$new_id_perubahan', '$id_pegawai', '$tanggal_perubahan', '$gaji_sebelum_perubahan', '$gaji_bulanan', 'Update kontrak')";
-    $conn->query($log_query);
-
-    // Redirect or display a success message
-    header("Location: index.php");
-    exit();
+    if ($stmt->execute()) {
+        echo "<script>alert('Kontrak pegawai berhasil ditambahkan!'); window.location.href='index.php';</script>";
+    } else {
+        echo "<script>alert('Gagal menambahkan kontrak pegawai.');</script>";
+    }
 }
+?>
+
+<main id="main" class="main">
+    <div class="container">
+        <h1>Tambah Kontrak Pegawai</h1>
+        <form method="post" action="">
+            <div class="mb-3">
+                <label for="id_pegawai" class="form-label">ID Pegawai</label>
+                <input type="number" class="form-control" id="id_pegawai" name="id_pegawai" required placeholder="Enter Employee ID">
+            </div>
+            <div class="mb-3">
+                <label for="tanggal_mulai_kontrak" class="form-label">Tanggal Mulai Kontrak</label>
+                <input type="date" class="form-control" id="tanggal_mulai_kontrak" name="tanggal_mulai_kontrak" required>
+            </div>
+            <div class="mb-3">
+                <label for="tanggal_berakhir_kontrak" class="form-label">Tanggal Berakhir Kontrak</label>
+                <input type="date" class="form-control" id="tanggal_berakhir_kontrak" name="tanggal_berakhir_kontrak" required>
+            </div>
+            <div class="mb-3">
+                <label for="status_kontrak" class="form-label">Status Kontrak</label>
+                <select class="form-select" id="status_kontrak" name="status_kontrak" required>
+                    <option value="Aktif">Aktif</option>
+                    <option value="Nonaktif">Nonaktif</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="gaji_bulanan" class="form-label">Gaji Bulanan</label>
+                <input type="text" class="form-control" id="gaji_bulanan" name="gaji_bulanan" required placeholder="Enter Monthly Salary">
+            </div>
+            <div class="mb-3">
+                <label for="tipe_kontrak" class="form-label">Tipe Kontrak</label>
+                <select class="form-select" id="tipe_kontrak" name="tipe_kontrak" required>
+                    <option value="1">Tetap</option>
+                    <option value="2">Kontrak</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Sumbit</button>
+        </form>
+    </div>
+</main>
+
+<?php
+include '../template/footer.php';
 ?>
