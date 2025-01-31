@@ -27,13 +27,17 @@
             </a>
         </li><!-- End Recruitment Nav -->
 
-        <a class="nav-link collapsed" href="<?php echo BASE_URL; ?>/hris/recruitment/index.php">
-            <i class="bi bi-briefcase"></i><span>Recruitment</span>
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="<?php echo BASE_URL; ?>/hris/promosi_mutasi/promosi.php">
+            <i class="bi bi-p-square-fill"></i><span>Manajemen promosi mutasi</span>
         </a>
+        </li><!-- End Promosi_mutasi Nav -->
+
         <li class="nav-item">
         <a class="nav-link collapsed" href="<?php echo BASE_URL; ?>/hris/kontrak_pegawai/index.php">
             <i class="bi bi-briefcase"></i><span>Manajemen Kontrak Pegawai</span>
         </a>
+        
         <li class="nav-item">
         <a class="nav-link collapsed" href="<?php echo BASE_URL; ?>/hris/slip_gaji/index.php">
             <i class="bi bi-cash-stack"></i><span>Slip Gaji</span>
@@ -110,18 +114,18 @@
         </li><!-- End Charts Nav -->
 
         <li class="nav-item">
-            <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
+            <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="<?php echo BASE_URL; ?>/hris/reward/index.php">
                 <i class="bi bi-backpack4"></i><span>icon</span><i class="bi bi-chevron-down ms-auto"></i>
             </a>
             <ul id="icons-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
                 <li>
                     <a href="<?php echo BASE_URL; ?>/hris/icon/index.php">
-                        <i class="bi bi-caret-right-fill"></i><span>icon</span>
+                        <i class="bi bi-caret-right-fill"></i><span>promosi</span>
                     </a>
                 </li>
                 <li>
                     <a href="<?php echo BASE_URL; ?>/hris/icon/index.php">
-                        <i class="bi bi-caret-right-fill"></i><span>icon</span>
+                        <i class="bi bi-caret-right-fill"></i><span>mutasi</span>
                     </a>
                 </li>
             </ul>
