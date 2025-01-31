@@ -20,6 +20,34 @@ if ($check_column->num_rows == 0) {
 $message = "";
 $message_type = "";
 
+// Konfigurasi pagination
+$per_page = 2; // Jumlah data per halaman
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$start = ($page - 1) * $per_page;
+
+// Proses pencarian
+$search = isset($_GET['search']) ? $mysqli->real_escape_string($_GET['search']) : '';
+$where = '';
+if (!empty($search)) {
+    $where = " WHERE 
+        id_pegawai LIKE '%$search%' OR 
+        jbt_lama LIKE '%$search%' OR 
+        jbt_baru LIKE '%$search%' OR 
+        dpm_lama LIKE '%$search%' OR 
+        dpm_baru LIKE '%$search%' OR 
+        alasan_mutasi LIKE '%$search%'";
+}
+
+// Update query total data dengan kondisi pencarian
+$total_query = "SELECT COUNT(*) as total FROM mutasi" . $where;
+$total_result = $mysqli->query($total_query);
+$total_row = $total_result->fetch_assoc();
+$total_pages = ceil($total_row['total'] / $per_page);
+
+// Update query data dengan kondisi pencarian
+$sql = "SELECT * FROM mutasi" . $where . " LIMIT $start, $per_page";
+$result = $mysqli->query($sql);
+
 // Proses tambah, edit, atau hapus data
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_pegawai = filter_input(INPUT_POST, 'id_pegawai', FILTER_SANITIZE_NUMBER_INT);
@@ -69,10 +97,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $stmt->close();
 }
-
-// Ambil data
-$sql = "SELECT * FROM mutasi";
-$result = $mysqli->query($sql);
 ?>
 
 <!DOCTYPE html>
@@ -163,15 +187,43 @@ $result = $mysqli->query($sql);
             <?php include '../template/sidebar.php'; ?>
         </div>
         <div class="main-content">
-            <h2>Daftar Promosi & Mutasi</h2>
+            <h2 class="mb-3">Daftar Promosi & Mutasi</h2>
+            
+            <!-- Tombol untuk menambah data -->
+            <button class="btn btn-primary mb-3" data-toggle="collapse" data-target="#addForm">Tambah Data</button>
+            
+            <!-- Form pencarian dipindah ke sini -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <form class="d-flex" method="GET">
+                        <input class="form-control me-2" type="search" name="search" 
+                               placeholder="Cari data mutasi..." 
+                               value="<?= htmlspecialchars($search) ?>" 
+                               aria-label="Search">
+                        <button class="btn btn-outline-primary" type="submit">Cari</button>
+                        <?php if (!empty($search)): ?>
+                            <a href="?" class="btn btn-outline-secondary ms-2">Reset</a>
+                        <?php endif; ?>
+                    </form>
+                </div>
+            </div>
+
+            <?php if (!empty($search)): ?>
+                <div class="alert alert-info">
+                    Menampilkan hasil pencarian untuk: "<?= htmlspecialchars($search) ?>"
+                    <?php if ($total_row['total'] > 0): ?>
+                        (<?= $total_row['total'] ?> hasil)
+                    <?php else: ?>
+                        (Tidak ada hasil)
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+
             <?php if ($message): ?>
                 <div class="alert <?= $message_type === 'success' ? 'alert-success' : 'alert-danger' ?>">
                     <?= $message ?>
                 </div>
             <?php endif; ?>
-
-            <!-- Tombol untuk menambah data -->
-            <button class="btn btn-primary" data-toggle="collapse" data-target="#addForm">Tambah Data</button>
 
             <!-- Form untuk menambah data yang disembunyikan pada awalnya -->
             <div id="addForm" class="collapse form-container">
@@ -300,6 +352,26 @@ $result = $mysqli->query($sql);
                     </tbody>
                 </table>
             </div>
+
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                        <a class="page-link" href="?page=<?= $page-1 ?>&search=<?= urlencode($search) ?>" 
+                           <?= ($page <= 1) ? 'tabindex="-1" aria-disabled="true"' : '' ?>>Previous</a>
+                    </li>
+                    
+                    <?php for($i = 1; $i <= $total_pages; $i++): ?>
+                        <li class="page-item <?= ($page == $i) ? 'active' : '' ?>">
+                            <a class="page-link" href="?page=<?= $i ?>&search=<?= urlencode($search) ?>"><?= $i ?></a>
+                        </li>
+                    <?php endfor; ?>
+                    
+                    <li class="page-item <?= ($page >= $total_pages) ? 'disabled' : '' ?>">
+                        <a class="page-link" href="?page=<?= $page+1 ?>&search=<?= urlencode($search) ?>"
+                           <?= ($page >= $total_pages) ? 'tabindex="-1" aria-disabled="true"' : '' ?>>Next</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 
