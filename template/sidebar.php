@@ -30,12 +30,13 @@
         <li class="nav-item">
             <a class="nav-link collapsed" href="<?php echo BASE_URL; ?>/hris/promosi_mutasi/promosi_mutasi.php">
             <i class="bi bi-p-square-fill"></i><span>Manajemen promosi mutasi</span>
+        </li><!-- End  Nav -->
 
             <li class="nav-item">
-            <a class="nav-link collapsed" href="<?php echo BASE_URL; ?>/hris/pelatihan/add_training.php">
-                <i class="bi bi-briefcase"></i><span>Pelatihann</span>
+            <a class="nav-link collapsed" href="<?php echo BASE_URL; ?>/hris/pelatihan/index.php">
+                <i class="bi bi-box-seam-fill"></i><span>Pelatihan</span>
             </a>
-        </li><!-- End Recruitment Nav -->
+        </li>
 
         <a class="nav-link collapsed" href="<?php echo BASE_URL; ?>/hris/recruitment/welcome.php">
             <i class="icon flat-line">
@@ -57,11 +58,7 @@
         </a>   
     </li><!-- End Recruitment Nav -->
 
-        <li class="nav-item">
-            <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="<?php echo BASE_URL; ?>/hris/kontrak_pegawai/inde.php">
-                <i class="bi bi-journal-text"></i><span>pelatihan</span><i class="bi bi-chevron-down ms-auto"></i>
-            </a>
-        </li><!-- End Forms Nav -->
+      
 
         <li class="nav-item">
             <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">

@@ -286,19 +286,17 @@ CREATE TABLE `pelamar` (
 -- Table structure for table `pelatihan`
 --
 
-CREATE TABLE `pelatihan` (
-  `id_pelatihan` int NOT NULL,
-  `nama_pelatihan` varchar(128) NOT NULL,
-  `deskripsi_pelatihan` varchar(128) NOT NULL,
-  `tgl_pelaksanaan` date NOT NULL,
-  `jam_pelaksanaan` time NOT NULL,
-  `durasi_pelatihan` varchar(128) NOT NULL,
-  `lokasi_pelatihan` varchar(128) NOT NULL,
-  `pemateri_pelatihan` varchar(128) NOT NULL,
-  `status_pelatihan` enum('Terlaksana','Tidak Terlaksana') NOT NULL,
-  `id_pegawai` int NOT NULL,
-  `kapasitas` varchar(128) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+CREATE TABLE IF NOT EXISTS pelatihan (
+    'id_pelatihan' INT AUTO_INCREMENT PRIMARY KEY,
+    'nama_pelatihan' VARCHAR(255) NOT NULL,
+    'deskripsi_pelatihan' VARCHAR(225) NOT NULL,
+    'tgl_pelaksanaan' DATE NOT NULL,
+    'jam_pelaksanaan' TIME NOT NULL,
+    'durasi_pelatihan' VARCHAR(50) NOT NULL,
+    'lokasi_pelatihan' VARCHAR(255) NOT NULL,
+    'pemateri_pelatihan' VARCHAR(255) NOT NULL,
+    'status_pelatihan' ENUM('terlaksana', 'belum terlaksana', 'tidak terlaksana') DEFAULT 'belum terlaksana'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
