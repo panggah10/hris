@@ -6,7 +6,7 @@ include '../connection.php';
 // Function to retrieve data from a table
 function getData($table) {
     global $conn; // Use the global connection variable
-    $result = $conn->query("SELECT * FROM `$table`");
+    $result = $conn->query("SELECT * FROM `$table` WHERE `status_kontrak` = 'Aktif'"); // Only show active contracts
     if ($result) {
         return $result->fetch_all(MYSQLI_ASSOC);
     } else {
@@ -20,7 +20,7 @@ $kontrak_pegawai = getData('kontrak pegawai');
 // Function to retrieve change history data
 function getChangeHistory() {
     global $conn; // Use the global connection variable
-    $result = $conn->query("SELECT * FROM `riwayat perubahan kontrak` ORDER BY `tanggal_perubahan` DESC");
+    $result = $conn->query("SELECT * FROM `riwayat_perubahan_kontrak` ORDER BY `tanggal_perubahan` DESC");
     if ($result) {
         return $result->fetch_all(MYSQLI_ASSOC);
     } else {
@@ -30,8 +30,28 @@ function getChangeHistory() {
 
 // Fetch data from change_history table
 $change_history = getChangeHistory();
+
+// Function to retrieve documents
+function getDocuments() {
+    global $conn; // Use the global connection variable
+    $result = $conn->query("SELECT * FROM `dokumen pendukung` ORDER BY `tanggal_unggah` DESC");
+    if ($result) {
+        return $result->fetch_all(MYSQLI_ASSOC);
+    } else {
+        return []; // Return an empty array if there's an error
+    }
+}
+
+// Fetch data from documents table
+$documents = getDocuments();
 ?>
 <main id="main" class="main">
+    <?php if (isset($_GET['message']) && $_GET['message'] == 'success'): ?>
+        <div class="alert alert-success" role="alert">
+            Kontrak pegawai berhasil diperbarui!
+        </div>
+    <?php endif; ?>
+
     <div class="container">
         <h1>Manajemen Kontrak Pegawai</h1>
         <ul class="nav nav-tabs" id="kontrakPegawaiTab" role="tablist">
@@ -41,41 +61,14 @@ $change_history = getChangeHistory();
             <li class="nav-item" role="presentation">
                 <a class="nav-link" id="riwayat-tab" data-bs-toggle="tab" href="#riwayat" role="tab" aria-controls="riwayat" aria-selected="false">Riwayat Perubahan</a>
             </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" id="dokumen-tab" data-bs-toggle="tab" href="#dokumen" role="tab" aria-controls="dokumen" aria-selected="false">Dokumen Pendukung</a>
+            </li>
         </ul>
         <div class="tab-content" id="kontrakPegawaiTabContent">
             <div class="tab-pane fade show active" id="kontrak" role="tabpanel" aria-labelledby="kontrak-tab">
-                <h2>Tambah Kontrak Pegawai</h2>
-                <form method="post" action="submit_kontrak.php">
-                    <div class="mb-3">
-                        <label for="id_pegawai" class="form-label">ID Pegawai</label>
-                        <input type="number" class="form-control" id="id_pegawai" name="id_pegawai" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="tanggal_mulai_kontrak" class="form-label">Tanggal Mulai Kontrak</label>
-                        <input type="date" class="form-control" id="tanggal_mulai_kontrak" name="tanggal_mulai_kontrak" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="tanggal_berakhir_kontrak" class="form-label">Tanggal Berakhir Kontrak</label>
-                        <input type="date" class="form-control" id="tanggal_berakhir_kontrak" name="tanggal_berakhir_kontrak" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="status_kontrak" class="form-label">Status Kontrak</label>
-                        <select class="form-select" id="status_kontrak" name="status_kontrak" required>
-                            <option value="Aktif">Aktif</option>
-                            <option value="Nonaktif">Nonaktif</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="gaji_bulanan" class="form-label">Gaji Bulanan</label>
-                        <input type="text" class="form-control" id="gaji_bulanan" name="gaji_bulanan" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="tipe_kontrak" class="form-label">Tipe Kontrak</label>
-                        <input type="text" class="form-control" id="tipe_kontrak" name="tipe_kontrak" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </form>
-
+                <h2 class="mt-4"></h2>
+                <button class="btn btn-primary mb-3" onclick="window.location.href='submit_kontrak.php'">Tambah Kontrak Pegawai</button>
                 <h2 class="mt-4">Daftar Kontrak Pegawai</h2>
                 <table class="table">
                     <thead>
@@ -86,48 +79,32 @@ $change_history = getChangeHistory();
                             <th>Status Kontrak</th>
                             <th>Gaji Bulanan</th>
                             <th>Tipe Kontrak</th>
+                            <th>Update Kontrak Pegawai</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($kontrak_pegawai as $row): ?>
                             <tr>
                                 <td><?= $row['id_pegawai'] ?></td>
-                                <td><?= $row['tanggal_mulai'] ?></td>
-                                <td><?= $row['tanggal_berakhir'] ?></td>
+                                <td><?= $row['tanggal_mulai_kontrak'] ?></td>
+                                <td><?= $row['tanggal_berakhir_kontrak'] ?></td>
                                 <td><?= $row['status_kontrak'] ?></td>
                                 <td><?= $row['gaji_bulanan'] ?></td>
                                 <td><?= $row['tipe_kontrak'] ?></td>
+                                <td>
+                                    <a href="edit_kontrak.php?id=<?= $row['id_pegawai'] ?>" class="btn btn-warning">Update</a>
+                                    <a href="delete_kontrak.php?id=<?= $row['id_pegawai'] ?>" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this contract?');">Delete</a>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
             <div class="tab-pane fade" id="riwayat" role="tabpanel" aria-labelledby="riwayat-tab">
-                <h2>Riwayat Perubahan Kontrak Pegawai</h2>
-                <form method="post" action="submit_change_history.php">
-                    <div class="mb-3">
-                        <label for="id_kontrak" class="form-label">ID Kontrak</label>
-                        <input type="text" class="form-control" id="id_kontrak" name="id_kontrak" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="tanggal_perubahan" class="form-label">Tanggal Perubahan</label>
-                        <input type="date" class="form-control" id="tanggal_perubahan" name="tanggal_perubahan" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="gaji_sebelum" class="form-label">Gaji Sebelum Perubahan</label>
-                        <input type="text" class="form-control" id="gaji_sebelum" name="gaji_sebelum" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="gaji_setelah" class="form-label">Gaji Setelah Perubahan</label>
-                        <input type="text" class="form-control" id="gaji_setelah" name="gaji_setelah" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="keterangan_perubahan" class="form-label">Keterangan Perubahan</label>
-                        <input type="text" class="form-control" id="keterangan_perubahan" name="keterangan_perubahan" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Log Perubahan</button>
-                </form>
-                <table class="table mt-4">
+                <h2 class="mt-4"></h2>
+                <button class="btn btn-primary mb-3" onclick="window.location.href='submit_perubahan.php'">Tambah Perubahan Kontrak Pegawai</button>
+                <h2 class="mt-4">Daftar Perubahan Kontrak Pegawai</h2>
+                <table class="table">
                     <thead>
                         <tr>
                             <th>ID Kontrak</th>
@@ -135,6 +112,7 @@ $change_history = getChangeHistory();
                             <th>Gaji Sebelum Perubahan</th>
                             <th>Gaji Setelah Perubahan</th>
                             <th>Keterangan Perubahan</th>
+                            <th>Edit Riwayat Perubahan</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -145,6 +123,44 @@ $change_history = getChangeHistory();
                                 <td><?= $row['gaji_sebelum_perubahan'] ?></td>
                                 <td><?= $row['gaji_setelah_perubahan'] ?></td>
                                 <td><?= $row['keterangan_perubahan'] ?></td>
+                                <td>
+                                <a href="edit_perubahan.php?id=<?= $row['id'] ?>" class="btn btn-warning">Update</a>
+                                <a href="delete_perubahan.php?id=<?= $row['id'] ?>" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this contract?');">Delete</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" id="dokumen" role="tabpanel" aria-labelledby="dokumen-tab">
+                <h2 class="mt-4"></h2>
+                <button class="btn btn-primary mb-3" onclick="window.location.href='submit_dokumen.php'">Tambah Dokumen Pendukung</button>
+                <h2 class="mt-4">Daftar Dokumen Pendukung</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Dokumen Pegawai</th>
+                            <th>Kontrak Pegawai</th>
+                            <th>Jenis Dokumen</th>
+                            <th>Tanggal Unggah</th>
+                            <th>Keterangan</th>
+                            <th>Nama File</th>
+                            <th>Edit Data</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($documents as $doc): ?>
+                            <tr>
+                                <td><?= $doc['dokumen_peg'] ?></td>
+                                <td><?= $doc['kontrak_peg'] ?></td>
+                                <td><?= $doc['jenis_dokumen'] ?></td>
+                                <td><?= $doc['tanggal_unggah'] ?></td>
+                                <td><?= $doc['nama_file'] ?></td>
+                                <td><?= $doc['lokasi_file'] ?></td>                            
+                                <td>
+                                <a href="edit_dokumen.php?id=<?= $doc['dokumen_peg'] ?>" class="btn btn-warning">Edit</a>
+                                <a href="delete_dokumen.php?id=<?= $doc['dokumen_peg'] ?>" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this document?');">Delete</a>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

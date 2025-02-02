@@ -14,6 +14,11 @@
             <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="<?php echo BASE_URL; ?>/hris/reward/index.php">
                 <i class="bi bi-award"></i><span>Reward</span></i>
             </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="<?php echo BASE_URL; ?>/hris/kedisiplinan/index.php">
+                <i class="bi bi-award"></i><span>Kedisiplinan</span></i>
+            </a>
         </li><!-- End Components Nav -->
 
         <li class="nav-item">
@@ -28,9 +33,14 @@
         </a>
         <li class="nav-item">
         <a class="nav-link collapsed" href="<?php echo BASE_URL; ?>/hris/kontrak_pegawai/index.php">
-            <i class="bi bi-briefcase"></i><span>Kontrak Pegawai</span>
+            <i class="bi bi-briefcase"></i><span>Manajemen Kontrak Pegawai</span>
         </a>
-    </li>
+        
+        <li class="nav-item">
+        <a class="nav-link collapsed" href="<?php echo BASE_URL; ?>/hris/slip_gaji/index.php">
+            <i class="bi bi-cash-stack"></i><span>Slip Gaji</span>
+        </a>   
+    </li><!-- End Recruitment Nav -->
 
         <li class="nav-item">
             <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
@@ -102,27 +112,23 @@
         </li><!-- End Charts Nav -->
 
         <li class="nav-item">
-            <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
-                <i class="bi bi-gem"></i><span>Icons</span><i class="bi bi-chevron-down ms-auto"></i>
+            <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="<?php echo BASE_URL; ?>/hris/reward/index.php">
+                <i class="bi bi-backpack4"></i><span>icon</span><i class="bi bi-chevron-down ms-auto"></i>
             </a>
-            <ul id="icons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+            <ul id="icons-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
                 <li>
-                    <a href="icons-bootstrap.html">
-                        <i class="bi bi-circle"></i><span>Bootstrap Icons</span>
+                    <a href="<?php echo BASE_URL; ?>/hris/icon/index.php">
+                        <i class="bi bi-caret-right-fill"></i><span>promosi</span>
                     </a>
                 </li>
                 <li>
-                    <a href="icons-remix.html">
-                        <i class="bi bi-circle"></i><span>Remix Icons</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="icons-boxicons.html">
-                        <i class="bi bi-circle"></i><span>Boxicons</span>
+                    <a href="<?php echo BASE_URL; ?>/hris/icon/index.php">
+                        <i class="bi bi-caret-right-fill"></i><span>mutasi</span>
                     </a>
                 </li>
             </ul>
         </li><!-- End Icons Nav -->
+
 
         <li class="nav-heading">Pages</li>
 
