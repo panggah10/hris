@@ -28,7 +28,7 @@
         </li><!-- End Recruitment Nav -->
 
         <li class="nav-item">
-            <a class="nav-link collapsed" href="<?php echo BASE_URL; ?>/hris/promosi_mutasi/promosi.php">
+            <a class="nav-link collapsed" href="<?php echo BASE_URL; ?>/hris/promosi_mutasi/promosi_mutasi.php">
             <i class="bi bi-p-square-fill"></i><span>Manajemen promosi mutasi</span>
         </a>
         </li><!-- End Promosi_mutasi Nav -->
