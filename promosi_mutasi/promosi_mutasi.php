@@ -102,29 +102,37 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $per_page = 3;
 $start = ($page - 1) * $per_page;
 
-// Query sesuai tab aktif dengan pencarian
+// Query sesuai tab aktif dengan pencarian dan JOIN ke tabel pegawai
 if ($active_tab == 'promosi') {
-    $count_query = "SELECT COUNT(*) as total FROM promosi";
-    $base_query = "SELECT * FROM promosi";
+    $count_query = "SELECT COUNT(*) as total FROM promosi p 
+                    JOIN pegawai pg ON p.id_peg = pg.id_peg";
+    $base_query = "SELECT p.*, pg.nama_peg as nama_pegawai 
+                   FROM promosi p 
+                   JOIN pegawai pg ON p.id_peg = pg.id_peg";
     if (!empty($search)) {
-        $where_clause = " WHERE id_peg LIKE '%$search%' 
-                         OR jbt_lama LIKE '%$search%' 
-                         OR jbt_baru LIKE '%$search%' 
-                         OR alasan_promosi LIKE '%$search%'";
+        $where_clause = " WHERE p.id_peg LIKE '%$search%' 
+                         OR pg.nama_peg LIKE '%$search%'
+                         OR p.jbt_lama LIKE '%$search%' 
+                         OR p.jbt_baru LIKE '%$search%' 
+                         OR p.alasan_promosi LIKE '%$search%'";
         $count_query .= $where_clause;
         $base_query .= $where_clause;
     }
 } else {
-    $count_query = "SELECT COUNT(*) as total FROM mutasi";
-    $base_query = "SELECT * FROM mutasi";
+    $count_query = "SELECT COUNT(*) as total FROM mutasi m 
+                    JOIN pegawai pg ON m.id_peg = pg.id_peg";
+    $base_query = "SELECT m.*, pg.nama_peg as nama_pegawai 
+                   FROM mutasi m 
+                   JOIN pegawai pg ON m.id_peg = pg.id_peg";
     if (!empty($search)) {
-        $where_clause = " WHERE id_pegawai LIKE '%$search%' 
-                         OR jbt_lama LIKE '%$search%' 
-                         OR jbt_baru LIKE '%$search%' 
-                         OR dpm_lama LIKE '%$search%' 
-                         OR dpm_baru LIKE '%$search%' 
-                         OR alasan_mutasi LIKE '%$search%' 
-                         OR status_mutasi LIKE '%$search%'";
+        $where_clause = " WHERE m.id_peg LIKE '%$search%' 
+                         OR pg.nama_peg LIKE '%$search%'
+                         OR m.jbt_lama LIKE '%$search%' 
+                         OR m.jbt_baru LIKE '%$search%' 
+                         OR m.dpm_lama LIKE '%$search%' 
+                         OR m.dpm_baru LIKE '%$search%' 
+                         OR m.alasan_mutasi LIKE '%$search%' 
+                         OR m.status_mutasi LIKE '%$search%'";
         $count_query .= $where_clause;
         $base_query .= $where_clause;
     }
@@ -142,33 +150,48 @@ $result = $mysqli->query($query);
 // Proses tambah data mutasi
 if (isset($_POST['add_mutasi'])) {
     try {
-        // Debug: Print POST data
-        // echo "<pre>"; print_r($_POST); echo "</pre>"; die();
+        $id_peg = isset($_POST['id_pegawai']) ? $mysqli->real_escape_string($_POST['id_pegawai']) : '';
         
-        $id_pegawai = isset($_POST['id_pegawai']) ? $mysqli->real_escape_string($_POST['id_pegawai']) : '';
+        // Cek apakah ID Pegawai ada di tabel pegawai
+        $check_pegawai = "SELECT id_peg FROM pegawai WHERE id_peg = ?";
+        $check_stmt = $mysqli->prepare($check_pegawai);
+        $check_stmt->bind_param("s", $id_peg);
+        $check_stmt->execute();
+        $pegawai_exists = $check_stmt->get_result()->num_rows > 0;
+        $check_stmt->close();
+
+        if (!$pegawai_exists) {
+            throw new Exception("ID Pegawai tidak ditemukan dalam database.");
+        }
+
+        // Cek apakah pegawai sudah memiliki mutasi aktif
+        $check_mutasi = "SELECT id_mutasi FROM mutasi WHERE id_peg = ? AND status_mutasi = 'Pending'";
+        $check_mutasi_stmt = $mysqli->prepare($check_mutasi);
+        $check_mutasi_stmt->bind_param("s", $id_peg);
+        $check_mutasi_stmt->execute();
+        $mutasi_exists = $check_mutasi_stmt->get_result()->num_rows > 0;
+        $check_mutasi_stmt->close();
+
+        if ($mutasi_exists) {
+            throw new Exception("Pegawai ini masih memiliki mutasi yang pending.");
+        }
+
         $jbt_lama = isset($_POST['jbt_lama']) ? $mysqli->real_escape_string($_POST['jbt_lama']) : '';
         $jbt_baru = isset($_POST['jbt_baru']) ? $mysqli->real_escape_string($_POST['jbt_baru']) : '';
         $dpm_lama = isset($_POST['dpm_lama']) ? $mysqli->real_escape_string($_POST['dpm_lama']) : '';
         $dpm_baru = isset($_POST['dpm_baru']) ? $mysqli->real_escape_string($_POST['dpm_baru']) : '';
         $tgl_mutasi = isset($_POST['tgl_mutasi']) ? $mysqli->real_escape_string($_POST['tgl_mutasi']) : '';
         $alasan_mutasi = isset($_POST['alasan_mutasi']) ? $mysqli->real_escape_string($_POST['alasan_mutasi']) : '';
-        $status_mutasi = isset($_POST['status_mutasi']) ? $mysqli->real_escape_string($_POST['status_mutasi']) : 'Pending,approved,rejected';
-
-        // Validasi data
-        if (empty($id_pegawai) || empty($jbt_lama) || empty($jbt_baru) || 
-            empty($dpm_lama) || empty($dpm_baru) || empty($tgl_mutasi) || 
-            empty($alasan_mutasi)) {
-            throw new Exception("Semua field harus diisi!");
-        }
+        $status_mutasi = 'Pending'; // Default status
 
         // Query untuk menambah data mutasi
-        $query = "INSERT INTO mutasi (id_pegawai, jbt_lama, jbt_baru, dpm_lama, dpm_baru, 
+        $query = "INSERT INTO mutasi (id_peg, jbt_lama, jbt_baru, dpm_lama, dpm_baru, 
                                     tgl_mutasi, alasan_mutasi, status_mutasi) 
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         
         if ($stmt = $mysqli->prepare($query)) {
             $stmt->bind_param("ssssssss", 
-                $id_pegawai,
+                $id_peg,
                 $jbt_lama,
                 $jbt_baru,
                 $dpm_lama,
@@ -179,6 +202,21 @@ if (isset($_POST['add_mutasi'])) {
             );
             
             if ($stmt->execute()) {
+                // Jika mutasi disetujui, update data pegawai
+                if ($status_mutasi == 'Approved') {
+                    $update_pegawai = "UPDATE pegawai SET 
+                                     jbt_peg = ?,
+                                     dpm_peg = ?
+                                     WHERE id_peg = ?";
+                    $update_stmt = $mysqli->prepare($update_pegawai);
+                    $update_stmt->bind_param("sss", 
+                        $jbt_baru,
+                        $dpm_baru,
+                        $id_peg
+                    );
+                    $update_stmt->execute();
+                }
+                
                 setMessage("Data mutasi berhasil ditambahkan!", "success");
                 header("Location: promosi_mutasi.php?tab=mutasi");
                 exit();
@@ -198,26 +236,40 @@ if (isset($_POST['add_mutasi'])) {
 
 // Proses tambah data promosi
 if (isset($_POST['add_promosi'])) {
-    $id_peg = $mysqli->real_escape_string($_POST['id_peg']);
-    $jbt_lama = $mysqli->real_escape_string($_POST['jbt_lama']);
-    $jbt_baru = $mysqli->real_escape_string($_POST['jbt_baru']);
-    $tanggal_promosi = $mysqli->real_escape_string($_POST['tanggal_promosi']);
-    $alasan_promosi = $mysqli->real_escape_string($_POST['alasan_promosi']);
+    try {
+        $id_peg = isset($_POST['id_pegawai']) ? $mysqli->real_escape_string($_POST['id_pegawai']) : '';
+        
+        // Cek apakah ID Pegawai ada di tabel pegawai
+        $check_pegawai = "SELECT id_peg FROM pegawai WHERE id_peg = ?";
+        $check_stmt = $mysqli->prepare($check_pegawai);
+        $check_stmt->bind_param("s", $id_peg);
+        $check_stmt->execute();
+        $result_pegawai = $check_stmt->get_result();
+        $pegawai_data = $result_pegawai->fetch_assoc();
+        $check_stmt->close();
 
-    // Cek apakah ID Pegawai sudah ada
-    $check_query = "SELECT COUNT(*) as count FROM promosi WHERE id_peg = ?";
-    $check_stmt = $mysqli->prepare($check_query);
-    $check_stmt->bind_param("s", $id_peg);
-    $check_stmt->execute();
-    $check_result = $check_stmt->get_result();
-    $exists = $check_result->fetch_assoc()['count'] > 0;
-    $check_stmt->close();
+        if (!$pegawai_data) {
+            throw new Exception("ID Pegawai tidak ditemukan dalam database.");
+        }
 
-    if ($exists) {
-        // Jika ID sudah ada, tampilkan pesan error
-        setMessage("Error: ID Pegawai sudah ada dalam data promosi.", "danger");
-    } else {
-        // Jika ID belum ada, tambahkan data baru
+        // Cek apakah ID Pegawai sudah ada di tabel promosi
+        $check_promosi = "SELECT COUNT(*) as count FROM promosi WHERE id_peg = ?";
+        $check_stmt = $mysqli->prepare($check_promosi);
+        $check_stmt->bind_param("s", $id_peg);
+        $check_stmt->execute();
+        $promosi_exists = $check_stmt->get_result()->fetch_assoc()['count'] > 0;
+        $check_stmt->close();
+
+        if ($promosi_exists) {
+            throw new Exception("Pegawai ini sudah memiliki data promosi.");
+        }
+
+        $jbt_lama = isset($_POST['jbt_lama']) ? $mysqli->real_escape_string($_POST['jbt_lama']) : '';
+        $jbt_baru = isset($_POST['jbt_baru']) ? $mysqli->real_escape_string($_POST['jbt_baru']) : '';
+        $tanggal_promosi = isset($_POST['tanggal_promosi']) ? $mysqli->real_escape_string($_POST['tanggal_promosi']) : '';
+        $alasan_promosi = isset($_POST['alasan_promosi']) ? $mysqli->real_escape_string($_POST['alasan_promosi']) : '';
+
+        // Query untuk menambah data promosi
         $insert_query = "INSERT INTO promosi (id_peg, jbt_lama, jbt_baru, tanggal_promosi, alasan_promosi) 
                         VALUES (?, ?, ?, ?, ?)";
         
@@ -233,12 +285,14 @@ if (isset($_POST['add_promosi'])) {
             if ($insert_stmt->execute()) {
                 setMessage("Data promosi berhasil ditambahkan!", "success");
             } else {
-                setMessage("Error: " . $insert_stmt->error, "danger");
+                throw new Exception("Gagal menambahkan data promosi: " . $insert_stmt->error);
             }
             $insert_stmt->close();
         } else {
-            setMessage("Error: " . $mysqli->error, "danger");
+            throw new Exception("Error preparing query: " . $mysqli->error);
         }
+    } catch (Exception $e) {
+        setMessage("Error: " . $e->getMessage(), "danger");
     }
     
     header("Location: promosi_mutasi.php?tab=promosi");
@@ -248,7 +302,7 @@ if (isset($_POST['add_promosi'])) {
 // Proses edit data mutasi
 if (isset($_POST['edit_mutasi'])) {
     $id_mutasi = $mysqli->real_escape_string($_POST['id_mutasi']);
-    $id_pegawai = $mysqli->real_escape_string($_POST['id_pegawai']);
+    $id_peg = $mysqli->real_escape_string($_POST['id_peg']);
     $jbt_lama = $mysqli->real_escape_string($_POST['jbt_lama']);
     $jbt_baru = $mysqli->real_escape_string($_POST['jbt_baru']);
     $dpm_lama = $mysqli->real_escape_string($_POST['dpm_lama']);
@@ -258,7 +312,7 @@ if (isset($_POST['edit_mutasi'])) {
     $status_mutasi = $mysqli->real_escape_string($_POST['status_mutasi']);
 
     $query = "UPDATE mutasi SET 
-              id_pegawai = ?,
+              id_peg = ?,
               jbt_lama = ?,
               jbt_baru = ?,
               dpm_lama = ?,
@@ -270,7 +324,7 @@ if (isset($_POST['edit_mutasi'])) {
     
     if ($stmt = $mysqli->prepare($query)) {
         $stmt->bind_param("ssssssssi", 
-            $id_pegawai,
+            $id_peg,
             $jbt_lama,
             $jbt_baru,
             $dpm_lama,
@@ -282,6 +336,22 @@ if (isset($_POST['edit_mutasi'])) {
         );
         
         if ($stmt->execute()) {
+            // Jika status disetujui, update data pegawai
+            if ($status_mutasi == 'Approved') {
+                $update_pegawai = "UPDATE pegawai SET 
+                                 jbt_peg = ?,
+                                 dpm_peg = ?
+                                 WHERE id_peg = ?";
+                $update_stmt = $mysqli->prepare($update_pegawai);
+                $update_stmt->bind_param("sss", 
+                    $jbt_baru,
+                    $dpm_baru,
+                    $id_peg
+                );
+                $update_stmt->execute();
+                $update_stmt->close();
+            }
+            
             setMessage("Data mutasi berhasil diperbarui!", "success");
         } else {
             setMessage("Error: " . $stmt->error, "danger");
@@ -332,6 +402,60 @@ if (isset($_POST['edit_promosi'])) {
     header("Location: promosi_mutasi.php?tab=promosi");
     exit();
 }
+
+// Proses update status mutasi
+if (isset($_POST['update_status_mutasi'])) {
+    try {
+        $id_mutasi = $mysqli->real_escape_string($_POST['id_mutasi']);
+        $status_baru = $mysqli->real_escape_string($_POST['status_mutasi']);
+        
+        // Ambil data mutasi
+        $get_mutasi = "SELECT * FROM mutasi WHERE id_mutasi = ?";
+        $get_stmt = $mysqli->prepare($get_mutasi);
+        $get_stmt->bind_param("i", $id_mutasi);
+        $get_stmt->execute();
+        $mutasi_data = $get_stmt->get_result()->fetch_assoc();
+        $get_stmt->close();
+        
+        // Update status mutasi
+        $update_query = "UPDATE mutasi SET status_mutasi = ? WHERE id_mutasi = ?";
+        $update_stmt = $mysqli->prepare($update_query);
+        $update_stmt->bind_param("si", $status_baru, $id_mutasi);
+        
+        if ($update_stmt->execute()) {
+            // Jika status disetujui, update data pegawai
+            if ($status_baru == 'Approved') {
+                $update_pegawai = "UPDATE pegawai SET 
+                                 jbt_peg = ?,
+                                 dpm_peg = ?
+                                 WHERE id_peg = ?";
+                $update_stmt = $mysqli->prepare($update_pegawai);
+                $update_stmt->bind_param("sss", 
+                    $mutasi_data['jbt_baru'],
+                    $mutasi_data['dpm_baru'],
+                    $mutasi_data['id_peg']
+                );
+                $update_stmt->execute();
+                $update_stmt->close();
+            }
+            
+            setMessage("Status mutasi berhasil diperbarui!", "success");
+        } else {
+            throw new Exception("Gagal memperbarui status mutasi.");
+        }
+        
+        header("Location: promosi_mutasi.php?tab=mutasi");
+        exit();
+    } catch (Exception $e) {
+        setMessage("Error: " . $e->getMessage(), "danger");
+        header("Location: promosi_mutasi.php?tab=mutasi");
+        exit();
+    }
+}
+
+// Perbaiki query untuk mengambil daftar pegawai untuk dropdown
+$query_pegawai = "SELECT id_peg, nama_peg FROM pegawai ORDER BY nama_peg";
+$result_pegawai = $mysqli->query($query_pegawai);
 
 // Sekarang baru include header dan sidebar
 include '../template/header.php';
@@ -909,6 +1033,7 @@ include '../template/sidebar.php';
                                             <thead>
                                                 <tr>
                                                     <th>ID Pegawai</th>
+                                                    <th>Nama Pegawai</th>
                                                     <th>Jabatan Lama</th>
                                                     <th>Jabatan Baru</th>
                                                     <th>Tanggal Promosi</th>
@@ -920,6 +1045,7 @@ include '../template/sidebar.php';
                                                 <?php while ($row = $result->fetch_assoc()): ?>
                                                     <tr>
                                                         <td><?= htmlspecialchars($row['id_peg']) ?></td>
+                                                        <td><?= htmlspecialchars($row['nama_pegawai']) ?></td>
                                                         <td><?= htmlspecialchars($row['jbt_lama']) ?></td>
                                                         <td><?= htmlspecialchars($row['jbt_baru']) ?></td>
                                                         <td><?= htmlspecialchars($row['tanggal_promosi']) ?></td>
@@ -941,6 +1067,7 @@ include '../template/sidebar.php';
                                             <thead>
                                                 <tr>
                                                     <th>ID Pegawai</th>
+                                                    <th>Nama Pegawai</th>
                                                     <th>Jabatan Lama</th>
                                                     <th>Jabatan Baru</th>
                                                     <th>Departemen Lama</th>
@@ -954,7 +1081,8 @@ include '../template/sidebar.php';
                                             <tbody>
                                                 <?php while ($row = $result->fetch_assoc()): ?>
                                                     <tr>
-                                                        <td><?= htmlspecialchars($row['id_pegawai']) ?></td>
+                                                        <td><?= htmlspecialchars($row['id_peg']) ?></td>
+                                                        <td><?= htmlspecialchars($row['nama_pegawai']) ?></td>
                                                         <td><?= htmlspecialchars($row['jbt_lama']) ?></td>
                                                         <td><?= htmlspecialchars($row['jbt_baru']) ?></td>
                                                         <td><?= htmlspecialchars($row['dpm_lama']) ?></td>
