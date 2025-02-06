@@ -16,7 +16,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="<?php echo BASE_URL; ?>/hris/kedisiplinan/index.php">
+            <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="<?php echo BASE_URL; ?>/hris/pegawai dan kedisiplinan/index.php">
                 <i class="bi bi-award"></i><span>Kedisiplinan</span></i>
             </a>
         </li><!-- End Components Nav -->
