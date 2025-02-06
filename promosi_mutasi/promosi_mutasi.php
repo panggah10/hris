@@ -99,7 +99,7 @@ if (isset($_GET['delete']) && isset($_GET['tab'])) {
 $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'promosi';
 $search = isset($_GET['search']) ? $mysqli->real_escape_string($_GET['search']) : '';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$per_page = 2;
+$per_page = 3;
 $start = ($page - 1) * $per_page;
 
 // Query sesuai tab aktif dengan pencarian
@@ -152,7 +152,7 @@ if (isset($_POST['add_mutasi'])) {
         $dpm_baru = isset($_POST['dpm_baru']) ? $mysqli->real_escape_string($_POST['dpm_baru']) : '';
         $tgl_mutasi = isset($_POST['tgl_mutasi']) ? $mysqli->real_escape_string($_POST['tgl_mutasi']) : '';
         $alasan_mutasi = isset($_POST['alasan_mutasi']) ? $mysqli->real_escape_string($_POST['alasan_mutasi']) : '';
-        $status_mutasi = isset($_POST['status_mutasi']) ? $mysqli->real_escape_string($_POST['status_mutasi']) : 'Pending';
+        $status_mutasi = isset($_POST['status_mutasi']) ? $mysqli->real_escape_string($_POST['status_mutasi']) : 'Pending,approved,rejected';
 
         // Validasi data
         if (empty($id_pegawai) || empty($jbt_lama) || empty($jbt_baru) || 
@@ -177,14 +177,6 @@ if (isset($_POST['add_mutasi'])) {
                 $alasan_mutasi,
                 $status_mutasi
             );
-            
-            // Debug: Print query dan parameter
-            // $debug_query = str_replace('?', "'%s'", $query);
-            // $debug_query = vsprintf($debug_query, [
-            //     $id_pegawai, $jbt_lama, $jbt_baru, $dpm_lama, $dpm_baru,
-            //     $tgl_mutasi, $alasan_mutasi, $status_mutasi
-            // ]);
-            // echo $debug_query; die();
             
             if ($stmt->execute()) {
                 setMessage("Data mutasi berhasil ditambahkan!", "success");
@@ -351,195 +343,491 @@ include '../template/sidebar.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajemen Promosi & Mutasi</title>
+    <title>Manajemen Promosi Dan Mutasi</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* Sidebar styles */
-        .sidebar {
-            width: 250px;
-            background-color: #ffffff;
-            height: 100vh;
-            position: fixed;
+        /* Ultra Modern Color Palette */
+        :root {
+            --ultra-primary: #6366f1;
+            --ultra-secondary: #4f46e5;
+            --ultra-success: #10b981;
+            --ultra-info: #3b82f6;
+            --ultra-warning: #f59e0b;
+            --ultra-danger: #ef4444;
+            --ultra-light: #f3f4f6;
+            --ultra-dark: #111827;
+            --luxury-gradient-1: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            --luxury-gradient-2: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            --luxury-gradient-3: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --glass-effect: rgba(255, 255, 255, 0.95);
+        }
+
+        /* Luxury Background Effect */
+        .main-content {
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            padding: 2.5rem;
+            position: relative;
+        }
+
+        /* Premium Page Title */
+        .page-title {
+            font-size: 3rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            color: var(--ultra-dark);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-title::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 5px;
+            background: var(--luxury-gradient-1);
+            border-radius: 5px;
+        }
+
+        /* Ultra Modern Card */
+        .card {
+            background: var(--glass-effect);
+            border: none;
+            border-radius: 40px;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+            backdrop-filter: blur(20px);
+            transform-style: preserve-3d;
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-20px) rotateX(5deg);
+            box-shadow: 
+                0 35px 70px -12px rgba(0, 0, 0, 0.2),
+                0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+        }
+
+        .card-header {
+            background: var(--luxury-gradient-1);
+            padding: 2.5rem;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header::before {
+            content: '';
+            position: absolute;
             top: 0;
             left: 0;
-            border-right: 1px solid #e0e0e0;
-            padding: 20px 0;
-            z-index: 1000;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at top right, rgba(255,255,255,0.2) 0%, transparent 60%),
+                radial-gradient(circle at bottom left, rgba(255,255,255,0.1) 0%, transparent 40%);
+            z-index: 1;
         }
 
-        /* Main content styles */
-        .main-content {
-            margin-left: 250px; /* Sesuaikan dengan lebar sidebar */
-            margin-top: 80px; /* Sesuaikan dengan tinggi header */
-            padding: 20px;
-        }
-
-        .container-fluid {
-            padding-top: 20px;
-            width: 100%;
-        }
-
-        /* Table responsive modifications */
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* Table styles */
+        /* Luxury Table Design */
         .table {
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin: 0;
+            border-spacing: 0 15px;
+            border-collapse: separate;
         }
 
-        .table th {
-            background-color: #f8f9fa;
-            border-bottom: 2px solid #dee2e6;
+        .table thead th {
+            background: transparent;
+            color: var(--ultra-dark);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.85rem;
+            padding: 2rem 1.5rem;
+            border: none;
         }
 
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 200px;
-            }
-            .main-content {
-                margin-left: 200px;
-                padding: 15px;
-            }
+        .table tbody tr {
+            background: white;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transform: translateZ(0);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border-radius: 20px;
         }
 
-        @media (max-width: 576px) {
-            .sidebar {
-                width: 0;
-                display: none;
-            }
-            .main-content {
-                margin-left: 0;
-            }
+        .table tbody tr:hover {
+            transform: scale(1.02) translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
         }
 
-        /* Additional utility classes */
-        .mb-4 {
-            margin-bottom: 1.5rem !important;
-        }
-
-        .card {
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-
-        .card-body {
-            padding: 20px;
-        }
-
-        /* Search form styles */
-        .search-form {
-            background-color: #ffffff;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        /* Pagination styles */
-        .pagination {
-            margin: 20px 0;
-        }
-
-        .pagination .page-link {
-            padding: 0.5rem 0.75rem;
-            margin-left: -1px;
-            line-height: 1.25;
-            color: #007bff;
-            background-color: #fff;
-            border: 1px solid #dee2e6;
-        }
-
-        .pagination .page-item.active .page-link {
-            z-index: 3;
-            color: #fff;
-            background-color: #007bff;
-            border-color: #007bff;
-        }
-
-        .pagination .page-link:hover {
-            z-index: 2;
-            color: #0056b3;
-            text-decoration: none;
-            background-color: #e9ecef;
-            border-color: #dee2e6;
-        }
-
-        .pagination .page-item.disabled .page-link {
-            color: #6c757d;
-            pointer-events: none;
-            background-color: #fff;
-            border-color: #dee2e6;
-        }
-
-        .pagination .page-item .page-link {
-            padding: 8px 16px;
-            color: #007bff;
-            background-color: #fff;
-            border: 1px solid #dee2e6;
-            margin: 0 2px;
-        }
-
-        .pagination .page-item.active .page-link {
-            color: #fff;
-            background-color: #007bff;
-            border-color: #007bff;
-        }
-
-        .pagination .page-item.disabled .page-link {
-            color: #6c757d;
-            pointer-events: none;
-            background-color: #fff;
-            border-color: #dee2e6;
-        }
-
-        .pagination .page-link:hover {
-            color: #0056b3;
-            text-decoration: none;
-            background-color: #e9ecef;
-            border-color: #dee2e6;
-        }
-
-        .pagination .page-link:focus {
-            z-index: 3;
-            outline: 0;
-            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-        }
-
-        /* Responsive Pagination */
-        @media (max-width: 576px) {
-            .pagination .page-link {
-                padding: 6px 12px;
-                font-size: 14px;
-            }
-        }
-
-        h2.mb-4 {
-            margin-top: 20px;
-            color: #333;
+        .table td {
+            padding: 1.8rem;
+            vertical-align: middle;
+            border: none;
+            color: var(--ultra-dark);
             font-weight: 500;
         }
 
-        .badge {
-            font-size: 0.875rem;
-            padding: 0.5em 0.8em;
+        .table td:first-child {
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
         }
 
-        /* Responsive styles */
+        .table td:last-child {
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+
+        /* Premium Search Container */
+        .search-container {
+            background: var(--glass-effect);
+            border-radius: 30px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+            backdrop-filter: blur(20px);
+            transform: translateZ(0);
+            transition: all 0.5s ease;
+        }
+
+        .search-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.12),
+                0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+        }
+
+        .search-form .form-control {
+            border: 2px solid rgba(99, 102, 241, 0.1);
+            border-radius: 20px;
+            padding: 1.5rem 2rem;
+            font-size: 1.1rem;
+            transition: all 0.4s ease;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-form .form-control:focus {
+            border-color: var(--ultra-primary);
+            background: white;
+            box-shadow: 
+                0 10px 25px rgba(99, 102, 241, 0.15),
+                0 0 0 5px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Ultra Modern Status Badges */
+        .status-badge {
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.2));
+            transform: translateY(100%);
+            transition: transform 0.4s ease;
+        }
+
+        .status-badge:hover::before {
+            transform: translateY(0);
+        }
+
+        .status-pending {
+            background: var(--luxury-gradient-2);
+            color: white;
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .status-approved {
+            background: var(--luxury-gradient-3);
+            color: white;
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .status-rejected {
+            background: linear-gradient(135deg, var(--ultra-danger) 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Premium Action Buttons */
+        .action-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 0.5rem;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+            border: none;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-5px);
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.2), rgba(255,255,255,0.3));
+            transform: translateY(100%);
+            transition: transform 0.4s ease;
+        }
+
+        .action-btn:hover::before {
+            transform: translateY(0);
+        }
+
+        .btn-edit {
+            background: var(--luxury-gradient-2);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, var(--ultra-danger) 0%, #dc2626 100%);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Ultra Modern Pagination */
+        .pagination {
+            gap: 1rem;
+        }
+
+        .pagination .page-link {
+            width: 50px;
+            height: 50px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 18px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--ultra-dark);
+            background: white;
+            border: none;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .pagination .page-link:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .pagination .page-item.active .page-link {
+            background: var(--luxury-gradient-1);
+            color: white;
+            box-shadow: 0 12px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Loading Animation */
+        .loading-overlay {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(99, 102, 241, 0.1);
+            border-top: 5px solid var(--ultra-primary);
+            border-radius: 50%;
+            animation: spin 1s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        /* Luxury Modal Design */
+        .modal-content {
+            border: none;
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.2);
+            background: var(--glass-effect);
+            backdrop-filter: blur(20px);
+        }
+
+        .modal-header {
+            background: var(--luxury-gradient-1);
+            padding: 2.5rem;
+            border: none;
+        }
+
+        .modal-body {
+            padding: 2.5rem;
+        }
+
+        .modal-footer {
+            padding: 2rem 2.5rem;
+            background: rgba(99, 102, 241, 0.03);
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        /* Responsive Adjustments */
         @media (max-width: 768px) {
             .main-content {
-                margin-top: 60px;
+                padding: 1.5rem;
             }
-            
-            h2.mb-4 {
-                font-size: 1.5rem;
+
+            .page-title {
+                font-size: 2.5rem;
             }
+
+            .search-container {
+                padding: 1.5rem;
+            }
+
+            .table td, .table th {
+                padding: 1.2rem;
+            }
+
+            .action-btn {
+                width: 45px;
+                height: 45px;
+            }
+
+            .pagination .page-link {
+                width: 45px;
+                height: 45px;
+            }
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Mengatur layout utama */
+        .main-content {
+            margin-left: 260px; /* Sesuaikan dengan lebar sidebar */
+            padding: 2.5rem;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Responsive layout */
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 1.5rem;
+            }
+        }
+
+        /* Table container */
+        .table-responsive {
+            overflow-x: auto;
+            margin-right: 1rem;
+            border-radius: 20px;
+        }
+
+        /* Table width control */
+        .table {
+            width: 100%;
+            min-width: 800px; /* Minimum width untuk tabel */
+            margin-bottom: 0;
+        }
+
+        /* Container untuk card */
+        .card {
+            margin-right: 1rem;
+            margin-left: 1rem;
+        }
+
+        /* Search container */
+        .search-container {
+            margin-right: 1rem;
+            margin-left: 1rem;
+        }
+
+        /* Pagination container */
+        .pagination-container {
+            margin-right: 1rem;
+            margin-left: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        /* Mengatur scroll horizontal yang smooth */
+        .table-responsive::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .table-responsive::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: var(--ultra-primary);
+            border-radius: 4px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb:hover {
+            background: var(--ultra-secondary);
+        }
+
+        /* Memastikan konten tidak terpotong di mobile */
+        @media (max-width: 992px) {
+            .card {
+                margin-right: 0.5rem;
+                margin-left: 0.5rem;
+            }
+
+            .search-container {
+                margin-right: 0.5rem;
+                margin-left: 0.5rem;
+            }
+
+            .pagination-container {
+                margin-right: 0.5rem;
+                margin-left: 0.5rem;
+            }
+        }
+
+        /* Mengatur jarak dari header */
+        .content-wrapper {
+            padding-top: 80px; /* Sesuaikan dengan tinggi header */
+        }
+
+        /* Container untuk mengatur max-width konten */
+        .content-container {
+            max-width: 1400px;
+            margin: 0 auto;
         }
     </style>
 </head>
@@ -550,72 +838,156 @@ include '../template/sidebar.php';
         </div>
         
         <div class="main-content">
-            <h2 class="mb-4">Manajemen Promosi & Mutasi</h2>
+            <div class="content-wrapper">
+                <div class="content-container">
+                    <h2 class="mb-4">Manajemen Promosi Dan Mutasi</h2>
 
-            <?php if ($message): ?>
-            <div class="alert alert-<?= $message_type ?> alert-dismissible fade show" role="alert">
-                <?= htmlspecialchars($message) ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            <?php endif; ?>
+                    <?php if ($message): ?>
+                    <div class="alert alert-<?= $message_type ?> alert-dismissible fade show" role="alert">
+                        <?= htmlspecialchars($message) ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php endif; ?>
 
-            <!-- Tab Navigation -->
-            <ul class="nav nav-tabs mb-4">
-                <li class="nav-item">
-                    <a class="nav-link <?= $active_tab == 'promosi' ? 'active' : '' ?>" 
-                       href="?tab=promosi">Data Promosi</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?= $active_tab == 'mutasi' ? 'active' : '' ?>" 
-                       href="?tab=mutasi">Data Mutasi</a>
-                </li>
-            </ul>
+                    <!-- Tab Navigation -->
+                    <ul class="nav nav-tabs mb-4">
+                        <li class="nav-item">
+                            <a class="nav-link <?= $active_tab == 'promosi' ? 'active' : '' ?>" 
+                               href="?tab=promosi">Data Promosi</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= $active_tab == 'mutasi' ? 'active' : '' ?>" 
+                               href="?tab=mutasi">Data Mutasi</a>
+                        </li>
+                    </ul>
 
-            <!-- Search and Add Button Row -->
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <form action="" method="GET" class="d-flex">
-                        <input type="hidden" name="tab" value="<?= $active_tab ?>">
-                        <input type="text" name="search" class="form-control me-2" 
-                               placeholder="Cari data..." value="<?= htmlspecialchars($search) ?>">
-                        <button type="submit" class="btn btn-primary">Cari</button>
-                        <?php if (!empty($search)): ?>
-                            <a href="?tab=<?= $active_tab ?>" class="btn btn-secondary ms-2">Reset</a>
+                    <!-- Search and Add Button Row -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <form action="" method="GET" class="d-flex">
+                                <input type="hidden" name="tab" value="<?= $active_tab ?>">
+                                <input type="text" name="search" class="form-control me-2" 
+                                       placeholder="Cari data..." value="<?= htmlspecialchars($search) ?>">
+                                <button type="submit" class="btn btn-primary">Cari</button>
+                                <?php if (!empty($search)): ?>
+                                    <a href="?tab=<?= $active_tab ?>" class="btn btn-secondary ms-2">Reset</a>
+                                <?php endif; ?>
+                            </form>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" 
+                                    data-bs-target="#<?= $active_tab ?>Modal">
+                                Tambah <?= ucfirst($active_tab) ?>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Notifikasi Hasil Pencarian -->
+                    <?php if (!empty($search)): ?>
+                        <?php if ($total_records > 0): ?>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="bi bi-check-circle-fill me-2"></i>
+                                Ditemukan <?= $total_records ?> data untuk pencarian "<?= htmlspecialchars($search) ?>"
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php else: ?>
+                            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                Tidak ditemukan data untuk pencarian "<?= htmlspecialchars($search) ?>"
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
                         <?php endif; ?>
-                    </form>
-                </div>
-                <div class="col-md-6 text-end">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" 
-                            data-bs-target="#<?= $active_tab ?>Modal">
-                        Tambah <?= ucfirst($active_tab) ?>
-                    </button>
-                </div>
-            </div>
+                    <?php endif; ?>
 
-            <!-- Notifikasi Hasil Pencarian -->
-            <?php if (!empty($search)): ?>
-                <?php if ($total_records > 0): ?>
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <i class="bi bi-check-circle-fill me-2"></i>
-                        Ditemukan <?= $total_records ?> data untuk pencarian "<?= htmlspecialchars($search) ?>"
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <!-- Tabel Data -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <?php if ($total_records > 0): ?>
+                                        <?php if ($active_tab == 'promosi'): ?>
+                                            <thead>
+                                                <tr>
+                                                    <th>ID Pegawai</th>
+                                                    <th>Jabatan Lama</th>
+                                                    <th>Jabatan Baru</th>
+                                                    <th>Tanggal Promosi</th>
+                                                    <th>Alasan Promosi</th>
+                                                    <th>Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php while ($row = $result->fetch_assoc()): ?>
+                                                    <tr>
+                                                        <td><?= htmlspecialchars($row['id_peg']) ?></td>
+                                                        <td><?= htmlspecialchars($row['jbt_lama']) ?></td>
+                                                        <td><?= htmlspecialchars($row['jbt_baru']) ?></td>
+                                                        <td><?= htmlspecialchars($row['tanggal_promosi']) ?></td>
+                                                        <td><?= htmlspecialchars($row['alasan_promosi']) ?></td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-edit action-btn" 
+                                                                    onclick='editPromosi(<?= json_encode($row) ?>)'>
+                                                                <i class="bi bi-pencil-fill text-white"></i>
+                                                            </button>
+                                                            <button type="button" class="btn btn-delete action-btn"
+                                                                    onclick="confirmDelete('<?= $row['id_peg'] ?>', 'promosi')">
+                                                                <i class="bi bi-trash-fill text-white"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                <?php endwhile; ?>
+                                            </tbody>
+                                        <?php else: ?>
+                                            <thead>
+                                                <tr>
+                                                    <th>ID Pegawai</th>
+                                                    <th>Jabatan Lama</th>
+                                                    <th>Jabatan Baru</th>
+                                                    <th>Departemen Lama</th>
+                                                    <th>Departemen Baru</th>
+                                                    <th>Tanggal Mutasi</th>
+                                                    <th>Alasan Mutasi</th>
+                                                    <th>Status</th>
+                                                    <th>Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php while ($row = $result->fetch_assoc()): ?>
+                                                    <tr>
+                                                        <td><?= htmlspecialchars($row['id_pegawai']) ?></td>
+                                                        <td><?= htmlspecialchars($row['jbt_lama']) ?></td>
+                                                        <td><?= htmlspecialchars($row['jbt_baru']) ?></td>
+                                                        <td><?= htmlspecialchars($row['dpm_lama']) ?></td>
+                                                        <td><?= htmlspecialchars($row['dpm_baru']) ?></td>
+                                                        <td><?= htmlspecialchars($row['tgl_mutasi']) ?></td>
+                                                        <td><?= htmlspecialchars($row['alasan_mutasi']) ?></td>
+                                                        <td>
+                                                            <span class="status-badge status-<?= strtolower($row['status_mutasi']) ?>">
+                                                                <?= htmlspecialchars($row['status_mutasi']) ?>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-edit action-btn" 
+                                                                    onclick='editMutasi(<?= json_encode($row) ?>)'>
+                                                                <i class="bi bi-pencil-fill text-white"></i>
+                                                            </button>
+                                                            <button type="button" class="btn btn-delete action-btn"
+                                                                    onclick="confirmDelete('<?= $row['id_mutasi'] ?>', 'mutasi')">
+                                                                <i class="bi bi-trash-fill text-white"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                <?php endwhile; ?>
+                                            </tbody>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                </table>
+                            </div>
+                        </div>
                     </div>
-                <?php else: ?>
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        Tidak ditemukan data untuk pencarian "<?= htmlspecialchars($search) ?>"
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                <?php endif; ?>
-            <?php endif; ?>
 
-            <!-- Tabel Data -->
-            <div class="card">
-                <div class="card-body">
-                    <?php if ($total_records > 0): ?>
-                        <?php include "table_{$active_tab}.php"; ?>
-                        
-                        <!-- Pagination -->
+                    <!-- Pagination -->
+                    <div class="pagination-container">
                         <?php if ($total_pages > 1): ?>
                         <div class="text-center mt-4">
                             <ul class="pagination justify-content-center">
@@ -669,15 +1041,7 @@ include '../template/sidebar.php';
                             </div>
                         </div>
                         <?php endif; ?>
-                    <?php else: ?>
-                        <div class="alert alert-info mb-0">
-                            <?php if (!empty($search)): ?>
-                                Tidak ditemukan data untuk pencarian "<?= htmlspecialchars($search) ?>"
-                            <?php else: ?>
-                                Belum ada data <?= $active_tab ?> yang tersedia.
-                            <?php endif; ?>
-                        </div>
-                    <?php endif; ?>
+                    </div>
                 </div>
             </div>
         </div>
@@ -700,13 +1064,6 @@ include '../template/sidebar.php';
         setTimeout(function() {
             $('.alert').fadeOut('slow');
         }, 3000);
-
-        // Konfirmasi hapus
-        $('.btn-hapus').click(function(e) {
-            if (!confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-                e.preventDefault();
-            }
-        });
     });
 
     // Fungsi untuk edit mutasi
@@ -720,31 +1077,11 @@ include '../template/sidebar.php';
         document.getElementById('edit_dpm_baru').value = data.dpm_baru;
         document.getElementById('edit_tgl_mutasi').value = data.tgl_mutasi;
         document.getElementById('edit_alasan_mutasi').value = data.alasan_mutasi;
-        
-        // Set nilai status mutasi
-        const statusSelect = document.getElementById('edit_status_mutasi');
-        statusSelect.value = data.status_mutasi;
+        document.getElementById('edit_status_mutasi').value = data.status_mutasi;
 
         // Tampilkan modal edit
         var editModal = new bootstrap.Modal(document.getElementById('editMutasiModal'));
         editModal.show();
-    }
-
-    function confirmDelete(id, type) {
-        Swal.fire({
-            title: 'Konfirmasi Hapus',
-            text: "Apakah Anda yakin ingin menghapus data ini?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Ya, Hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = `promosi_mutasi.php?tab=${type}&delete=${id}`;
-            }
-        });
     }
 
     // Fungsi untuk edit promosi
@@ -760,9 +1097,62 @@ include '../template/sidebar.php';
         var editModal = new bootstrap.Modal(document.getElementById('editPromosiModal'));
         editModal.show();
     }
+
+    // Fungsi konfirmasi hapus dengan SweetAlert2
+    function confirmDelete(id, type) {
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: "Data yang dihapus tidak dapat dikembalikan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Tampilkan loading
+                Swal.fire({
+                    title: 'Menghapus Data...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Redirect ke URL penghapusan
+                window.location.href = `promosi_mutasi.php?tab=${type}&delete=${id}`;
+            }
+        });
+    }
+
+    // Tampilkan notifikasi setelah penghapusan berhasil
+    <?php if (isset($_SESSION['message']) && isset($_SESSION['message_type'])): ?>
+        Swal.fire({
+            title: '<?= ($_SESSION['message_type'] == 'success') ? 'Berhasil!' : 'Gagal!' ?>',
+            text: '<?= $_SESSION['message'] ?>',
+            icon: '<?= $_SESSION['message_type'] ?>',
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false
+        });
+        <?php unset($_SESSION['message']); unset($_SESSION['message_type']); ?>
+    <?php endif; ?>
+
+    // Fungsi untuk menampilkan notifikasi umum
+    function showNotification(message, type = 'success') {
+        Swal.fire({
+            title: type.charAt(0).toUpperCase() + type.slice(1) + '!',
+            text: message,
+            icon: type,
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false
+        });
+    }
     </script>
 
-    <!-- Tambahkan SweetAlert2 -->
+    <!-- Pastikan SweetAlert2 dimuat -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>
