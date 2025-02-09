@@ -22,11 +22,11 @@
         </li><!-- End Components Nav -->
 
         
+       
         <li class="nav-item">
-            <a class="nav-link collapsed" href="<?php echo BASE_URL; ?>/hris/promosi_mutasi/promosi_mutasi.php">
+        <a class="nav-link collapsed" href="<?php echo BASE_URL; ?>/hris/promosi_mutasi/promosi_mutasi.php">
             <i class="bi bi-p-square-fill"></i><span>Manajemen promosi mutasi</span>
-        </li><!-- End  Nav -->
-
+        </a>
             <li class="nav-item">
             <a class="nav-link collapsed" href="<?php echo BASE_URL; ?>/hris/pelatihan/index.php">
                 <i class="bi bi-box-seam-fill"></i><span>Pelatihan</span>
