@@ -22,6 +22,12 @@
         </li><!-- End Components Nav -->
 
         <li class="nav-item">
+            <a class="nav-link collapsed" href="<?php echo BASE_URL; ?>/hris/recruitment/index.php">
+                <i class="bi bi-briefcase"></i><span>Recruitment</span>
+            </a>
+        </li><!-- End Recruitment Nav -->
+
+        <li class="nav-item">
             <a class="nav-link collapsed" href="<?php echo BASE_URL; ?>/hris/manajemen promosi dan mutasi/index.php">
             <i class="bi bi-p-square-fill"></i><span>Manajemen promosi dan mutasi</span>
         </li><!-- End  Nav -->
