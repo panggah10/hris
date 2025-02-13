@@ -258,15 +258,16 @@ CREATE TABLE `nominasi` (
 CREATE TABLE `pegawai` (
   `id_peg` int(11) NOT NULL,
   `nama_peg` varchar(128) NOT NULL,
-  `gender_peg` enum('Laki-laki','Perempuan') NOT NULL,
-  `status_peg` varchar(128) NOT NULL,
+  `gender_peg` enum('laki-laki','perempuan','','') NOT NULL,
+  `status_peg` enum('aktif','cuti','non-aktif','') NOT NULL,
   `almt_peg` text NOT NULL,
-  `no_telp_peg` varchar(128) NOT NULL,
+  `no_telp_peg` varchar(32) NOT NULL,
   `email_peg` varchar(128) NOT NULL,
-  `jabatan_peg` varchar(11) NOT NULL,
-  `ttl_peg` date NOT NULL,
+  `jabatan_peg` enum('Direktur','Manager','Staff','Supervisor') NOT NULL,
+  `departemen_peg` enum('HRD','Marketing','IT','Finance') NOT NULL,
+  `tgl_peg` date DEFAULT NULL,
   `foto_peg` varchar(64) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 

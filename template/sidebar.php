@@ -11,6 +11,13 @@
         </li><!-- End Dashboard Nav -->
        
         <li class="nav-item">
+            <a class="nav-link collapsed" href="/hris/pegawai/index.php">
+                <i class="bi bi-person"></i>
+                <span>Pegawai</span>      
+            </a>
+        </li><!-- End Pegawai Page Nav -->
+
+        <li class="nav-item">
             <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="<?php echo BASE_URL; ?>/hris/reward/index.php">
                 <i class="bi bi-award"></i><span>Reward</span></i>
             </a>
